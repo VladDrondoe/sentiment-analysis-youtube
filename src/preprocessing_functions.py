@@ -31,3 +31,31 @@ def encoding_date(df):
     df.drop(columns=['PublishedAt'], inplace=True)
     return df
 
+import spacy
+nlp = spacy.load("en_core_web_sm", disable=["ner", "parser"])  # mai rapid
+
+NEGATIONS = {"not", "no", "never", "n't"}
+
+def lemmatize_spacy_series(texts):
+    out = []
+    for doc in nlp.pipe(texts, batch_size=1000):
+        tokens = []
+        for t in doc:
+            if t.lower_ in NEGATIONS:
+                tokens.append(t.lower_)
+                continue
+            if t.is_space:
+                continue
+            if t.is_punct:
+                if t.text in {"!", "?"}:
+                    tokens.append(t.text)
+                continue
+            if t.is_stop:
+                continue
+            lemma = t.lemma_.lower()
+            if lemma == "-pron-":
+                lemma = t.lower_
+            tokens.append(lemma)
+        out.append(" ".join(tokens))
+    return out
+
