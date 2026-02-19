@@ -5,10 +5,9 @@ import joblib
 import numpy as np
 import streamlit as st
 #streamlit run src/interfata.py
-from API_function import getcomments  # funcția ta
-# sau: from api_module import getcomments
+from API_function import getcomments
 
-# Încarcă modelul+tfidf (când îl ai final)
+
 bundle = joblib.load("Models/sentiment_bundle_lgbm.joblib")
 model = bundle["model"]
 tfidf = bundle["tfidf"]
@@ -25,14 +24,14 @@ if st.button("Analyze"):
         st.stop()
 
     with st.spinner("Downloading comments..."):
-        df = getcomments(video_id)  # ideal: getcomments(video_id, max_comments=max_comments)
+        df = getcomments(video_id) 
 
     st.write(f"Total comments fetched: {len(df)}")
     if len(df) == 0:
         st.warning("Could not fetch comments or no comments available.")
         st.stop()
 
-    # Când ai modelul final:
+
     numeric_features = ["Likes","Comment_Length","Month","DayOfWeek","Hour","IsWeekend"]
     
 
